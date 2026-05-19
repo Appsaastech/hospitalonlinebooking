@@ -1,0 +1,46 @@
+﻿@page
+
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Prefix Management";
+}
+
+<div class="container">
+
+    <!-- Heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Prefix Management</h2>
+    </div>
+
+    <!-- Prefix Table -->
+    <table id="prefixTable" class="table table-bordered">
+
+        <thead class="table-dark">
+            <tr>
+                <th>Patient Registration Prefix</th>
+                <th>Prescription Prefix</th>
+                <th>Invoice Prefix</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>PAT</td>
+                <td>PRE</td>
+                <td>INV</td>
+                <td>
+                    <a href="/EditPrefix" class="btn btn-primary btn-sm">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+    let table = new DataTable('#prefixTable');
+</script>

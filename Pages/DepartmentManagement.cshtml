@@ -1,0 +1,130 @@
+﻿@page
+
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Department Management";
+}
+
+<div class="container">
+
+    <!-- Heading + Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Department Management</h2>
+
+        <a href="/AddDepartment" class="btn btn-primary">
+            Add Department
+        </a>
+
+    </div>
+
+    <!-- Department Table -->
+    <table id="departmentTable" class="table table-bordered">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>Department Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>General Dentistry</td>
+                <td>Routine dental checkups and cleaning</td>
+                <td>
+                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Orthodontics</td>
+                <td>Braces and teeth alignment treatment</td>
+                <td>
+                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Endodontics</td>
+                <td>Root canal and tooth pulp treatment</td>
+                <td>
+                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Periodontics</td>
+                <td>Gum disease treatment and care</td>
+                <td>
+                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Prosthodontics</td>
+                <td>Crowns, bridges, and dentures</td>
+                <td>
+                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Oral Surgery</td>
+                <td>Tooth extraction and jaw procedures</td>
+                <td>
+                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    let table = new DataTable('#departmentTable');
+
+</script>

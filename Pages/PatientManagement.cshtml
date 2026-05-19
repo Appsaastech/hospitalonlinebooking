@@ -1,0 +1,112 @@
+﻿@page
+
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Patient Management";
+}
+
+<div class="container">
+
+    <!-- Heading + Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Patient Management</h2>
+
+        <a href="/AddPatient" class="btn btn-primary">
+            Add Patient
+        </a>
+
+    </div>
+
+    <!-- Patient Table -->
+    <table id="patientTable" class="table table-bordered">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>Patient Registration No</th>
+                <th>Patient Name</th>
+                <th>Phone Number</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>PAT00001</td>
+                <td>Anu Krishnan</td>
+                <td>9876543210</td>
+                <td>Kollam</td>
+                <td>
+                    <a href="/EditPatient" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>PAT00002</td>
+                <td>Rahul Nair</td>
+                <td>9876545678</td>
+                <td>Kochi</td>
+                <td>
+                    <a href="/EditPatient" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>PAT00003</td>
+                <td>Meera Joseph</td>
+                <td>9876512345</td>
+                <td>Trivandrum</td>
+                <td>
+                    <a href="/EditPatient" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>PAT00004</td>
+                <td>Arjun Kumar</td>
+                <td>9876509876</td>
+                <td>Alappuzha</td>
+                <td>
+                    <a href="/EditPatient" class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+    let table = new DataTable('#patientTable');
+
+</script>
