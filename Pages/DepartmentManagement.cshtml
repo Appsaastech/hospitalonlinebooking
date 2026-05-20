@@ -125,6 +125,14 @@
 
 <script>
 
-    let table = new DataTable('#departmentTable');
+        let table = new DataTable('#departmentTable',{
+    columnDefs: [
+                {
+                    targets: 2,   // Actions column index (starts from 0)
+                    orderable: false
+                }
+            ]
+        });
+
 
 </script>

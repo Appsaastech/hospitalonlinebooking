@@ -42,5 +42,13 @@
 </div>
 
 <script>
-    let table = new DataTable('#prefixTable');
+        let table = new DataTable('#prefixTable',{
+    columnDefs: [
+                {
+                    targets: 3,   // Actions column index (starts from 0)
+                    orderable: false
+                }
+            ]
+        });
+
 </script>

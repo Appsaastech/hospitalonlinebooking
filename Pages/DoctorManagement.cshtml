@@ -15,7 +15,7 @@
 
             <h2>Doctor Management</h2>
         <div>
-            <a href="/DepartmentManagement" class="btn btn-info me-2">
+            <a href="/DepartmentManagement" class="btn btn-success">
                 Department Management
             </a>
 
@@ -115,7 +115,14 @@
 
     <script>
 
-        let table = new DataTable('#doctorTable');
+        let table = new DataTable('#doctorTable', {
+columnDefs: [
+            {
+                targets: 4,   // Actions column index (starts from 0)
+                orderable: false
+            }
+        ]
+    });
 
     </script>
 

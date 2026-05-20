@@ -107,6 +107,14 @@
 
 <script>
 
-    let table = new DataTable('#patientTable');
+        let table = new DataTable('#patientTable',{
+    columnDefs: [
+                {
+                    targets: 4,   // Actions column index (starts from 0)
+                    orderable: false
+                }
+            ]
+        });
+
 
 </script>
