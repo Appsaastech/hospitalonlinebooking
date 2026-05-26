@@ -1,0 +1,85 @@
+﻿@page
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Add Doctor";
+}
+
+
+
+    <div class="container">
+
+        <div class="card shadow p-4">
+
+            <h2 class="mb-4">Add Doctor</h2>
+
+            <form>
+
+                <!-- Doctor Name -->
+                <div class="mb-3">
+
+                    <label class="form-label">Doctor Name</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter doctor name" />
+
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+
+                    <label class="form-label">Description</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter description" />
+
+                </div>
+
+                <!-- Department Dropdown -->
+                <div class="mb-3">
+
+                    <label class="form-label">Department</label>
+
+                    <select class="form-select">
+
+                        <option>Select Department</option>
+                        <option>Pediatrics</option>
+                        <option>Cardiology</option>
+                        <option>Orthopedics</option>
+                        <option>Neurology</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Qualification -->
+                <div class="mb-3">
+
+                    <label class="form-label">Qualification</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter qualification" />
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary">
+                        Save Doctor
+                    </button>
+
+                    <a href="/DoctorManagement" class="btn btn-secondary">
+                        Back
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+

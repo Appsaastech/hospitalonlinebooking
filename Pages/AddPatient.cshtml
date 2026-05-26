@@ -1,0 +1,78 @@
+﻿@page
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Add Patient";
+}
+
+
+    <div class="container">
+
+        <div class="card shadow p-4">
+
+            <h2 class="mb-4">Add Patient</h2>
+
+            <form>
+
+                <!-- Patient Registration Number -->
+                <div class="mb-3">
+
+                    <label class="form-label">Patient Registration No</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter registration number" />
+
+                </div>
+
+                <!-- Patient Name -->
+                <div class="mb-3">
+
+                    <label class="form-label">Patient Name</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter patient name" />
+
+                </div>
+
+                <!-- Phone Number -->
+                <div class="mb-3">
+
+                    <label class="form-label">Phone Number</label>
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Enter phone number" />
+
+                </div>
+
+                <!-- Address -->
+                <div class="mb-3">
+
+                    <label class="form-label">Address</label>
+
+                    <textarea class="form-control"
+                              rows="3"
+                              placeholder="Enter address"></textarea>
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+
+                    <button type="submit" class="btn btn-primary">
+                        Save Patient
+                    </button>
+
+                    <a href="/PatientManagement" class="btn btn-secondary">
+                        Back
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
