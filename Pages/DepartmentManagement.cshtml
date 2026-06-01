@@ -1,5 +1,4 @@
 ﻿@page
-
 @{
     Layout = "_MasterLayout";
     ViewData["Title"] = "Department Management";
@@ -7,132 +6,234 @@
 
 <div class="container">
 
-    <!-- Heading + Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <h2>Department Management</h2>
 
         <a href="/AddDepartment" class="btn btn-primary">
             Add Department
         </a>
-
     </div>
 
-    <!-- Department Table -->
     <table id="departmentTable" class="table table-bordered">
-
         <thead class="table-dark">
-
             <tr>
                 <th>Department Name</th>
                 <th>Description</th>
                 <th>Actions</th>
             </tr>
-
         </thead>
 
-        <tbody>
-
-            <tr>
-                <td>General Dentistry</td>
-                <td>Routine dental checkups and cleaning</td>
-                <td>
-                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Orthodontics</td>
-                <td>Braces and teeth alignment treatment</td>
-                <td>
-                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Endodontics</td>
-                <td>Root canal and tooth pulp treatment</td>
-                <td>
-                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Periodontics</td>
-                <td>Gum disease treatment and care</td>
-                <td>
-                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Prosthodontics</td>
-                <td>Crowns, bridges, and dentures</td>
-                <td>
-                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Oral Surgery</td>
-                <td>Tooth extraction and jaw procedures</td>
-                <td>
-                    <a href="/EditDepartment" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-        </tbody>
-
+        <tbody></tbody>
     </table>
 
 </div>
 
+<!-- Edit Modal -->
+<div class="modal fade" id="editDepartmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Edit Department</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editDepartmentId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Department Name</label>
+                    <input type="text"
+                           id="editDepartmentName"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea id="editDescription"
+                              class="form-control"></textarea>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-primary"
+                        onclick="updateDepartment()">
+                    Update
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <script>
 
-        let table = new DataTable('#departmentTable',{
-    columnDefs: [
-                {
-                    targets: 2,   // Actions column index (starts from 0)
-                    orderable: false
-                }
-            ]
-        });
+    $(document).ready(function () {
+        loadDepartments();
+    });
 
+    function loadDepartments() {
+
+        $.ajax({
+            type: "GET",
+            url: "/DepartmentManagement/GetDepartments",
+            dataType: "json",
+
+            success: function (response) {
+
+                if (response.status == 401) {
+                    alert("Authorization Failed");
+                    return;
+                }
+
+                let rows = "";
+
+                $.each(response.response, function (index, item) {
+
+                    rows += `
+                        <tr>
+                            <td>${item.departmentName}</td>
+                            <td>${item.description}</td>
+                            <td>
+
+                                <button class="btn btn-warning btn-sm"
+                                    onclick="editDepartment(${item.id})">
+                                    Edit
+                                </button>
+
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="deleteDepartment(${item.id})">
+                                    Delete
+                                </button>
+
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                $("#departmentTable tbody").html(rows);
+            },
+
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function editDepartment(id) {
+
+        $.ajax({
+            type: "POST",
+            url: "/DepartmentManagement/GetDepartmentById",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                var dept = response.response;
+
+                $("#editDepartmentId").val(dept.id);
+                $("#editDepartmentName").val(dept.departmentName);
+                $("#editDescription").val(dept.description);
+
+                var modal = new bootstrap.Modal(
+                    document.getElementById("editDepartmentModal")
+                );
+
+                modal.show();
+            },
+
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function updateDepartment() {
+
+        let department = {
+
+            id: parseInt($("#editDepartmentId").val()),
+            departmentName: $("#editDepartmentName").val(),
+            description: $("#editDescription").val()
+
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/DepartmentManagement/UpdateDepartment",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify(department),
+
+            success: function (response) {
+
+                if (response.status == 200) {
+
+                    alert("Department Updated Successfully");
+
+                    loadDepartments();
+
+                    bootstrap.Modal
+                        .getInstance(document.getElementById("editDepartmentModal"))
+                        .hide();
+                }
+                else {
+
+                    alert(response.message);
+                }
+            },
+
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+    function deleteDepartment(id) {
+
+        if (!confirm("Delete this Department?"))
+            return;
+
+        $.ajax({
+            type: "POST",
+            url: "/DepartmentManagement/DeleteDepartment",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                if (response.status == 200) {
+
+                    alert("Department Deleted Successfully");
+
+                    loadDepartments();
+                }
+                else {
+
+                    alert(response.message);
+                }
+            },
+
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
 
 </script>

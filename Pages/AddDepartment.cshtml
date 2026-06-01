@@ -4,53 +4,128 @@
     ViewData["Title"] = "Add Department";
 }
 
+<div class="container">
 
-    <div class="container">
+    <div class="card shadow p-4">
 
-        <div class="card shadow p-4">
+        <h2 class="mb-4">Add Department</h2>
 
-            <h2 class="mb-4">Add Department</h2>
+        <form id="departmentForm">
 
-            <form>
+            <div class="mb-3" id="divDepartmentName">
+                <label class="form-label">
+                    Department Name
+                    <span class="text-danger">*</span>
+                </label>
 
-                <!-- Department Name -->
-                <div class="mb-3">
+                <input type="text"
+                       id="departmentName"
+                       class="form-control"
+                       placeholder="Enter department name" />
+            </div>
 
-                    <label class="form-label">Department Name</label>
+            <div class="mb-3" id="divDescription">
+                <label class="form-label">
+                    Description
+                </label>
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter department name" />
+                <textarea id="description"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Enter department description"></textarea>
+            </div>
 
-                </div>
+            <div class="d-flex gap-2">
 
-                <!-- Description -->
-                <div class="mb-3">
+                <button type="submit"
+                        class="btn btn-primary">
+                    Save Department
+                </button>
 
-                    <label class="form-label">Description</label>
+                <a href="/DepartmentManagement"
+                   class="btn btn-secondary">
+                    Back
+                </a>
 
-                    <textarea class="form-control"
-                              rows="4"
-                              placeholder="Enter department description"></textarea>
+            </div>
 
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex gap-2">
-
-                    <button type="submit" class="btn btn-primary">
-                        Save Department
-                    </button>
-
-                    <a href="/DepartmentManagement" class="btn btn-secondary">
-                        Back
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#departmentForm").submit(function (e) {
+
+            e.preventDefault();
+
+            $(".lblvalidation").remove();
+
+            var departmentName =
+                $("#departmentName").val().trim();
+
+            var description =
+                $("#description").val().trim();
+
+            if (departmentName == "") {
+
+                $("#divDepartmentName").append(
+                    "<label class='text-danger lblvalidation'>Please enter Department Name</label>"
+                );
+
+                return;
+            }
+
+            $.ajax({
+
+                type: "POST",
+
+                url: "/DepartmentManagement/SaveDepartment",
+
+                contentType: "application/json",
+
+                dataType: "json",
+
+                data: JSON.stringify({
+
+                    departmentName: departmentName,
+
+                    description: description
+
+                }),
+
+                success: function (response) {
+
+                    if (response.status == 200 ||
+                        response.status == 201) {
+
+                        alert("Department Saved Successfully");
+
+                        $("#departmentName").val("");
+                        $("#description").val("");
+
+                        window.location.href =
+                            "/DepartmentManagement";
+                    }
+                    else {
+
+                        alert(response.message);
+                    }
+                },
+
+                error: function (xhr) {
+
+                    alert(xhr.responseText);
+
+                }
+            });
+
+        });
+
+    });
+
+</script>
