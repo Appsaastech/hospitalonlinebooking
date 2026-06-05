@@ -57,72 +57,91 @@
 
 <script>
 
+    function SaveDepartment() {
+
+        $(".lblvalidation").remove();
+
+        var departmentName = $("#departmentName").val().trim();
+        var description = $("#description").val().trim();
+
+        if (departmentName == "") {
+
+            $("#divDepartmentName").append(
+                "<label class='text-danger lblvalidation'>Please enter Department Name</label>"
+            );
+
+            return;
+        }
+
+       
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/DepartmentManagement/SaveDepartment",
+
+            dataType: "json",
+
+            contentType: "application/json",
+
+            data: JSON.stringify({
+
+                DepartmentName: departmentName,
+                Description: description
+
+            }),
+
+            success: function (response) {
+
+                 console.log(response);
+
+                if (response.statuscode == 200 ||
+                    response.statuscode == 201) {
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: "Department Saved Successfully"
+                    });
+
+                    $("#departmentName").val("");
+                    $("#description").val("");
+
+                    setTimeout(function () {
+                        window.location.href = "/DepartmentManagement";
+                    }, 1000);
+                }
+                else {
+
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: response.responsedata
+                    });
+                }
+            },
+
+            error: function (xhr) {
+
+            console.log(xhr);
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!"
+            });
+            }
+        });
+    }
+
     $(document).ready(function () {
 
         $("#departmentForm").submit(function (e) {
 
             e.preventDefault();
 
-            $(".lblvalidation").remove();
-
-            var departmentName =
-                $("#departmentName").val().trim();
-
-            var description =
-                $("#description").val().trim();
-
-            if (departmentName == "") {
-
-                $("#divDepartmentName").append(
-                    "<label class='text-danger lblvalidation'>Please enter Department Name</label>"
-                );
-
-                return;
-            }
-
-            $.ajax({
-
-                type: "POST",
-
-                url: "/DepartmentManagement/SaveDepartment",
-
-                contentType: "application/json",
-
-                dataType: "json",
-
-                data: JSON.stringify({
-
-                    departmentName: departmentName,
-
-                    description: description
-
-                }),
-
-                success: function (response) {
-
-                    if (response.status == 200 ||
-                        response.status == 201) {
-
-                        alert("Department Saved Successfully");
-
-                        $("#departmentName").val("");
-                        $("#description").val("");
-
-                        window.location.href =
-                            "/DepartmentManagement";
-                    }
-                    else {
-
-                        alert(response.message);
-                    }
-                },
-
-                error: function (xhr) {
-
-                    alert(xhr.responseText);
-
-                }
-            });
+            SaveDepartment();
 
         });
 

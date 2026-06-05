@@ -1,18 +1,24 @@
 ﻿using hospitalonlinebooking.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using RestSharp;
-using ShopManagement;
+using hospitalonlinebooking;
 
 namespace hospitalonlinebooking.Controllers
 {
     public class DepartmentManagementController : Controller
     {
+        private readonly SiteSettings _siteSettings;
         private readonly RestClientHelper _restClientHelper;
 
-        public DepartmentManagementController(RestClientHelper restClientHelper)
+        public DepartmentManagementController(
+            IOptions<SiteSettings> options,
+            RestClientHelper restClientHelper)
         {
+            _siteSettings = options.Value;
             _restClientHelper = restClientHelper;
         }
+        
 
         public IActionResult DepartmentManagement()
         {
@@ -24,26 +30,23 @@ namespace hospitalonlinebooking.Controllers
             return View();
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<JsonResult> GetDepartments()
         {
             try
             {
                 var options = _restClientHelper.CreateRestClientOptions("Department/GetDepartments");
-
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(null, "");
 
-                var response =
-                    await client.PostAsync<ResponseDataModel<IEnumerable<DepartmentModel>>>(request);
+                var response = await client.PostAsync<ApiResponse>(request);
 
                 return Json(response);
             }
             catch (Exception ex)
             {
-                var response = RestClientHelper.CreateErrorResponse(ex);
-                return Json(response);
+                return Json(RestClientHelper.CreateErrorResponse(ex));
             }
         }
 
@@ -53,20 +56,17 @@ namespace hospitalonlinebooking.Controllers
             try
             {
                 var options = _restClientHelper.CreateRestClientOptions("Department/SaveDepartment");
-
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
 
-                var response =
-                    await client.PostAsync<ResponseDataModel<string>>(request);
+                var response = await client.PostAsync<ApiResponse>(request);
 
                 return Json(response);
             }
             catch (Exception ex)
             {
-                var response = RestClientHelper.CreateErrorResponse(ex);
-                return Json(response);
+                return Json(RestClientHelper.CreateErrorResponse(ex));
             }
         }
 
@@ -76,20 +76,17 @@ namespace hospitalonlinebooking.Controllers
             try
             {
                 var options = _restClientHelper.CreateRestClientOptions("Department/GetDepartmentById");
-
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
 
-                var response =
-                    await client.PostAsync<ResponseDataModel<DepartmentModel>>(request);
+                var response = await client.PostAsync<ApiResponse>(request);
 
                 return Json(response);
             }
             catch (Exception ex)
             {
-                var response = RestClientHelper.CreateErrorResponse(ex);
-                return Json(response);
+                return Json(RestClientHelper.CreateErrorResponse(ex));
             }
         }
 
@@ -99,20 +96,17 @@ namespace hospitalonlinebooking.Controllers
             try
             {
                 var options = _restClientHelper.CreateRestClientOptions("Department/UpdateDepartment");
-
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
 
-                var response =
-                    await client.PostAsync<ResponseDataModel<string>>(request);
+                var response = await client.PostAsync<ApiResponse>(request);
 
                 return Json(response);
             }
             catch (Exception ex)
             {
-                var response = RestClientHelper.CreateErrorResponse(ex);
-                return Json(response);
+                return Json(RestClientHelper.CreateErrorResponse(ex));
             }
         }
 
@@ -122,20 +116,17 @@ namespace hospitalonlinebooking.Controllers
             try
             {
                 var options = _restClientHelper.CreateRestClientOptions("Department/DeleteDepartment");
-
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
 
-                var response =
-                    await client.PostAsync<ResponseDataModel<string>>(request);
+                var response = await client.PostAsync<ApiResponse>(request);
 
                 return Json(response);
             }
             catch (Exception ex)
             {
-                var response = RestClientHelper.CreateErrorResponse(ex);
-                return Json(response);
+                return Json(RestClientHelper.CreateErrorResponse(ex));
             }
         }
     }

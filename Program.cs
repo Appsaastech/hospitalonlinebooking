@@ -1,5 +1,5 @@
 using hospitalonlinebooking.Models;
-using ShopManagement;
+using hospitalonlinebooking;
 
 var builder = WebApplication.CreateBuilder(args);
 

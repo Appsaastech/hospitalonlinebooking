@@ -81,20 +81,20 @@
     function loadDepartments() {
 
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/DepartmentManagement/GetDepartments",
             dataType: "json",
 
             success: function (response) {
 
-                if (response.status == 401) {
+                if (response.statuscode == 401) {
                     alert("Authorization Failed");
                     return;
                 }
 
                 let rows = "";
 
-                $.each(response.response, function (index, item) {
+                $.each(response.responsedata, function (index, item) {
 
                     rows += `
                         <tr>
@@ -140,7 +140,7 @@
 
             success: function (response) {
 
-                var dept = response.response;
+                var dept = response.responsedata;
 
                 $("#editDepartmentId").val(dept.id);
                 $("#editDepartmentName").val(dept.departmentName);
@@ -179,7 +179,7 @@
 
             success: function (response) {
 
-                if (response.status == 200) {
+                if (response.statuscode == 200) {
 
                     alert("Department Updated Successfully");
 
@@ -191,7 +191,7 @@
                 }
                 else {
 
-                    alert(response.message);
+                    alert(response.responsedata);
                 }
             },
 
@@ -218,7 +218,7 @@
 
             success: function (response) {
 
-                if (response.status == 200) {
+                if (response.statuscode == 200) {
 
                     alert("Department Deleted Successfully");
 
@@ -226,7 +226,7 @@
                 }
                 else {
 
-                    alert(response.message);
+                    alert(response.responsedata);
                 }
             },
 
