@@ -6,16 +6,29 @@
 
 <div class="container">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Department Management</h2>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2 class="mb-1">Department Management</h2>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Department Management
+                    </li>
+                </ol>
+            </nav>
+        </div>
 
         <a href="/AddDepartment" class="btn btn-primary">
-            Add Department
+            <i class="bi bi-plus-lg"></i> Add Department
         </a>
     </div>
 
     <table id="departmentTable" class="table table-bordered">
-        <thead class="table-dark">
+        <thead class="table-secondary">
             <tr>
                 <th>Department Name</th>
                 <th>Description</th>
@@ -117,7 +130,20 @@
                     `;
                 });
 
-                $("#departmentTable tbody").html(rows);
+                    if ($.fn.DataTable.isDataTable('#departmentTable')) {
+        $('#departmentTable').DataTable().destroy();
+    }
+
+    $("#departmentTable tbody").html(rows);
+
+    new DataTable('#departmentTable', {
+        columnDefs: [
+            {
+                targets: 2,   // Actions column
+                orderable: false
+            }
+        ]
+    });
             },
 
             error: function (xhr) {

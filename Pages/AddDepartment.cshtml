@@ -73,68 +73,50 @@
             return;
         }
 
-       
 
-        $.ajax({
 
-            type: "POST",
+            $.ajax({
 
-            url: "/DepartmentManagement/SaveDepartment",
+        type: "POST",
+        url: "/DepartmentManagement/SaveDepartment",
+        dataType: "json",
+        contentType: "application/json",
 
-            dataType: "json",
+        data: JSON.stringify({
+            DepartmentName: departmentName,
+            Description: description
+        }),
 
-            contentType: "application/json",
+        success: function (response) {
 
-            data: JSON.stringify({
+            console.log(response);
 
-                DepartmentName: departmentName,
-                Description: description
+            if (response.statuscode == 200 ||
+                response.statuscode == 201) {
 
-            }),
+                alert("Department Saved Successfully");
 
-            success: function (response) {
+                $("#departmentName").val("");
+                $("#description").val("");
 
-                 console.log(response);
+                setTimeout(function () {
+                    window.location.href = "/DepartmentManagement";
+                }, 1000);
+            }
+            else {
 
-                if (response.statuscode == 200 ||
-                    response.statuscode == 201) {
+                alert(response.responsedata);
+            }
+        },
 
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success",
-                        text: "Department Saved Successfully"
-                    });
-
-                    $("#departmentName").val("");
-                    $("#description").val("");
-
-                    setTimeout(function () {
-                        window.location.href = "/DepartmentManagement";
-                    }, 1000);
-                }
-                else {
-
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: response.responsedata
-                    });
-                }
-            },
-
-            error: function (xhr) {
+        error: function (xhr) {
 
             console.log(xhr);
 
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Something went wrong!"
-            });
-            }
-        });
+            alert("Something went wrong!");
+        }
+    });
     }
-
     $(document).ready(function () {
 
         $("#departmentForm").submit(function (e) {
