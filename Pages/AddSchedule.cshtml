@@ -4,65 +4,224 @@
     ViewData["Title"] = "Add Schedule";
 }
 
+<div class="container">
 
-    <div class="container">
+    <div class="card shadow p-4">
 
-        <div class="card shadow p-4">
+        <h2 class="mb-4">Add Doctor Schedule</h2>
 
-            <h2 class="mb-4">Add Doctor Schedule</h2>
+        <form id="scheduleForm">
 
-            <form>
+            <!-- Doctor -->
+            <div class="mb-3" id="divDoctor">
+                <label class="form-label">
+                    Doctor Name
+                    <span class="text-danger">*</span>
+                </label>
 
-                <!-- Doctor Dropdown -->
-                <div class="mb-3">
+                <select id="doctorId" class="form-select">
+                    <option value="">Select Doctor</option>
+                </select>
+            </div>
 
-                    <label class="form-label">Doctor Name</label>
+            <!-- Schedule Date -->
+            <div class="mb-3" id="divScheduleDate">
+                <label class="form-label">
+                    Schedule Date
+                    <span class="text-danger">*</span>
+                </label>
 
-                    <select class="form-select">
+                <input type="date"
+                       id="scheduleDate"
+                       class="form-control" />
+            </div>
 
-                        <option>Select Doctor</option>
-                        <option>Dr. Arun</option>
-                        <option>Dr. Meera</option>
-                        <option>Dr. Joseph</option>
-                        <option>Dr. Anjali</option>
+            <!-- Start Time -->
+            <div class="mb-3" id="divStartTime">
+                <label class="form-label">
+                    Start Time
+                    <span class="text-danger">*</span>
+                </label>
 
-                    </select>
+                <input type="time"
+                       id="startTime"
+                       class="form-control" />
+            </div>
 
-                </div>
+            <!-- End Time -->
+            <div class="mb-3" id="divEndTime">
+                <label class="form-label">
+                    End Time
+                    <span class="text-danger">*</span>
+                </label>
 
-                <!-- Date -->
-                <div class="mb-3">
+                <input type="time"
+                       id="endTime"
+                       class="form-control" />
+            </div>
 
-                    <label class="form-label">Date</label>
+            <div class="d-flex gap-2">
 
-                    <input type="date" class="form-control" />
+                <button type="submit"
+                        class="btn btn-primary">
+                    Save Schedule
+                </button>
 
-                </div>
+                <a href="/ScheduleList"
+                   class="btn btn-secondary">
+                    Back
+                </a>
 
-                <!-- Time -->
-                <div class="mb-3">
+            </div>
 
-                    <label class="form-label">Time</label>
-
-                    <input type="time" class="form-control" />
-
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex gap-2">
-
-                    <button type="submit" class="btn btn-primary">
-                        Save Schedule
-                    </button>
-
-                    <a href="/ScheduleList" class="btn btn-secondary">
-                        Back
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
+
+</div>
+
+<script>
+
+    function LoadDoctors() {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/DoctorManagement/GetDoctors",
+            dataType: "json",
+
+            success: function (response) {
+
+                let options = '<option value="">Select Doctor</option>';
+
+                $.each(response.responsedata, function (index, item) {
+
+                    options += `
+                        <option value="${item.id}">
+                            ${item.doctorName}
+                        </option>
+                    `;
+                });
+
+                $("#doctorId").html(options);
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr);
+
+                alert("Unable to load doctors");
+            }
+        });
+    }
+
+    function SaveSchedule() {
+
+        $(".lblvalidation").remove();
+
+        var doctorId = $("#doctorId").val();
+        var scheduleDate = $("#scheduleDate").val();
+        var startTime = $("#startTime").val();
+        var endTime = $("#endTime").val();
+
+        if (doctorId == "") {
+
+            $("#divDoctor").append(
+                "<label class='text-danger lblvalidation'>Please select a doctor</label>"
+            );
+
+            return;
+        }
+
+        if (scheduleDate == "") {
+
+            $("#divScheduleDate").append(
+                "<label class='text-danger lblvalidation'>Please select a date</label>"
+            );
+
+            return;
+        }
+
+        if (startTime == "") {
+
+            $("#divStartTime").append(
+                "<label class='text-danger lblvalidation'>Please select start time</label>"
+            );
+
+            return;
+        }
+
+        if (endTime == "") {
+
+            $("#divEndTime").append(
+                "<label class='text-danger lblvalidation'>Please select end time</label>"
+            );
+
+            return;
+        }
+
+        $.ajax({
+
+            type: "POST",
+            url: "/ScheduleManagement/SaveSchedule",
+            dataType: "json",
+            contentType: "application/json",
+
+            data: JSON.stringify({
+
+                DoctorId: doctorId,
+                ScheduleDate: scheduleDate,
+                StartTime: startTime,
+                EndTime: endTime
+
+            }),
+
+            success: function (response) {
+
+                console.log(response);
+
+                if (response.statuscode == 200 ||
+                    response.statuscode == 201) {
+
+                    alert("Schedule Saved Successfully");
+
+                    $("#doctorId").val("");
+                    $("#scheduleDate").val("");
+                    $("#startTime").val("");
+                    $("#endTime").val("");
+
+                    setTimeout(function () {
+
+                        window.location.href = "/ScheduleList";
+
+                    }, 1000);
+                }
+                else {
+
+                    alert(response.responsedata);
+                }
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr);
+
+                alert("Something went wrong!");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        LoadDoctors();
+
+        $("#scheduleForm").submit(function (e) {
+
+            e.preventDefault();
+
+            SaveSchedule();
+        });
+
+    });
+
+</script>

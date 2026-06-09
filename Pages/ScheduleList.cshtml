@@ -10,64 +10,92 @@
     <div class="container">
 
         <!-- Heading + Button -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2 class="mb-1">Schedule Listing</h2>
 
-            <h2>Schedule Listing</h2>
-
-            <a href="/AddSchedule" class="btn btn-primary">
-                Add Schedule
-            </a>
-
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Schedule Listing
+                    </li>
+                </ol>
+            </nav>
         </div>
+
+        <a href="/AddSchedule" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add Schedule
+        </a>
+    </div>
 
         <!-- Table -->
         <table id="myTable" class="table table-bordered">
 
-            <thead class="table-dark">
+        <thead class="table-secondary">
 
                 <tr>
-                    <th>Doctor Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
+                <th>Doctor Name</th>
+                <th>Schedule Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Time Slots</th>
                 </tr>
 
             </thead>
 
-            <tbody>
-
-                <tr>
-                    <td>Dr. Arun</td>
-                    <td>06-05-2026</td>
-                    <td>10:00 AM</td>
-                </tr>
-
-                <tr>
-                    <td>Dr. Meera</td>
-                    <td>06-05-2026</td>
-                    <td>11:30 AM</td>
-                </tr>
-
-                <tr>
-                    <td>Dr. Joseph</td>
-                    <td>07-05-2026</td>
-                    <td>02:00 PM</td>
-                </tr>
-
-                <tr>
-                    <td>Dr. Anjali</td>
-                    <td>08-05-2026</td>
-                    <td>04:00 PM</td>
-                </tr>
-
-            </tbody>
+            <tbody></tbody>
 
         </table>
 
     </div>
 
-    <script>
+<script>
 
-        let table = new DataTable('#myTable');
+    $(document).ready(function () {
+        loadSchedules();
+    });
 
-    </script>
+    function loadSchedules() {
+
+        $.ajax({
+            type: "POST",
+            url: "/ScheduleManagement/GetSchedules",
+            dataType: "json",
+
+            success: function (response) {
+
+                let rows = "";
+
+                $.each(response.responsedata, function (index, item) {
+
+                    rows += `
+                        <tr>
+                            <td>${item.doctorName}</td>
+                            <td>${item.scheduleDate}</td>
+                            <td>${item.startTime}</td>
+                            <td>${item.endTime}</td>
+                            <td>${item.timeSlots}</td>
+                        </tr>
+                    `;
+                });
+
+                $("#myTable tbody").html(rows);
+
+                if ($.fn.DataTable.isDataTable('#myTable')) {
+                    $('#myTable').DataTable().destroy();
+                }
+
+                let table = new DataTable('#myTable');
+            },
+
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+</script>
 
