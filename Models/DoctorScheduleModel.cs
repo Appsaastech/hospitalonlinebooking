@@ -1,4 +1,4 @@
-﻿public class DoctorSchedule
+﻿public class DoctorScheduleModel
 {
     public int Id { get; set; }
     public int DoctorId { get; set; }

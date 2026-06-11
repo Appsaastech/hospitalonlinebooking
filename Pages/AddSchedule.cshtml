@@ -96,11 +96,10 @@
 
                 $.each(response.responsedata, function (index, item) {
 
-                    options += `
-                        <option value="${item.id}">
+                    options +=
+                        `<option value="${item.id}">
                             ${item.doctorName}
-                        </option>
-                    `;
+                        </option>`;
                 });
 
                 $("#doctorId").html(options);
@@ -127,7 +126,7 @@
         if (doctorId == "") {
 
             $("#divDoctor").append(
-                "<label class='text-danger lblvalidation'>Please select a doctor</label>"
+                "<label class='text-danger lblvalidation'>Please select Doctor</label>"
             );
 
             return;
@@ -136,7 +135,7 @@
         if (scheduleDate == "") {
 
             $("#divScheduleDate").append(
-                "<label class='text-danger lblvalidation'>Please select a date</label>"
+                "<label class='text-danger lblvalidation'>Please select Schedule Date</label>"
             );
 
             return;
@@ -145,7 +144,7 @@
         if (startTime == "") {
 
             $("#divStartTime").append(
-                "<label class='text-danger lblvalidation'>Please select start time</label>"
+                "<label class='text-danger lblvalidation'>Please select Start Time</label>"
             );
 
             return;
@@ -154,7 +153,7 @@
         if (endTime == "") {
 
             $("#divEndTime").append(
-                "<label class='text-danger lblvalidation'>Please select end time</label>"
+                "<label class='text-danger lblvalidation'>Please select End Time</label>"
             );
 
             return;
@@ -169,10 +168,10 @@
 
             data: JSON.stringify({
 
-                DoctorId: doctorId,
+                DoctorId: parseInt(doctorId),
                 ScheduleDate: scheduleDate,
-                StartTime: startTime,
-                EndTime: endTime
+                StartTime: startTime + ":00",
+                EndTime: endTime + ":00"
 
             }),
 
@@ -206,7 +205,10 @@
 
                 console.log(xhr);
 
-                alert("Something went wrong!");
+                alert(
+                    "Status = " + xhr.status +
+                    "\n\nResponse = " + xhr.responseText
+                );
             }
         });
     }
@@ -220,6 +222,7 @@
             e.preventDefault();
 
             SaveSchedule();
+
         });
 
     });

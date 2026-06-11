@@ -50,7 +50,7 @@ namespace hospitalonlinebooking.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> SaveSchedule([FromBody] DoctorSchedule obj)
+        public async Task<JsonResult> SaveSchedule([FromBody] DoctorScheduleModel obj)
         {
             try
             {

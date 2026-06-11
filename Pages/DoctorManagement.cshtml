@@ -1,127 +1,301 @@
 ﻿@page
-
 @{
     Layout = "_MasterLayout";
-    ViewData["Title"] = "Doctor Listing";
+    ViewData["Title"] = "Doctor Management";
 }
 
+<div class="container">
 
+    <div class="d-flex justify-content-between align-items-center mb-2">
 
-
-    <div class="container">
-
-        <!-- Heading + Button -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <h2>Doctor Management</h2>
         <div>
-           
+            <h2 class="mb-1">Doctor Management</h2>
 
-            <a href="/AddDoctor" class="btn btn-primary">
-                Add Doctor
-            </a>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Doctor Management
+                    </li>
+                </ol>
+            </nav>
         </div>
 
-        </div>
-
-        <!-- Doctor Table -->
-        <table id="doctorTable" class="table table-bordered">
-
-            <thead class="table-dark">
-
-                <tr>
-                    <th>Doctor Name</th>
-                    <th>Description</th>
-                    <th>Department</th>
-                    <th>Qualification</th>
-                    <th>Actions</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>Dr. Arun Kumar</td>
-                    <td>Senior heart specialist</td>
-                    <td>Cardiology</td>
-                    <td>MBBS, MD</td>
-                    <td>
-                        <a href="/EditDoctor" class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Dr. Meera Nair</td>
-                    <td>Neurology consultant</td>
-                    <td>Neurology</td>
-                    <td>MBBS, DM</td>
-                    <td>
-                        <a href="/EditDoctor" class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Dr. Joseph Mathew</td>
-                    <td>Orthopedic surgeon</td>
-                    <td>Orthopedics</td>
-                    <td>MBBS, MS</td>
-                    <td>
-                        <a href="/EditDoctor" class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>Dr. Anjali Menon</td>
-                    <td>Pediatric specialist</td>
-                    <td>Pediatrics</td>
-                    <td>MBBS, DCH</td>
-                    <td>
-                        <a href="/EditDoctor" class="btn btn-warning btn-sm">
-                            Edit
-                        </a>
-
-                        <button class="btn btn-danger btn-sm">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-
-            </tbody>
-
-        </table>
+        <a href="/AddDoctor" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add Doctor
+        </a>
 
     </div>
 
-    <script>
+    <table id="doctorTable" class="table table-bordered">
 
-        let table = new DataTable('#doctorTable', {
-columnDefs: [
-            {
-                targets: 4,   // Actions column index (starts from 0)
-                orderable: false
+        <thead class="table-secondary">
+            <tr>
+                <th>Doctor Name</th>
+                <th>Description</th>
+                <th>Department</th>
+                <th>Qualification</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody></tbody>
+
+    </table>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editDoctorModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Edit Doctor</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editDoctorId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Doctor Name</label>
+                    <input type="text"
+                           id="editDoctorName"
+                           class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea id="editDescription"
+                              class="form-control"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Qualification</label>
+                    <input type="text"
+                           id="editQualification"
+                           class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Department</label>
+                    <select id="editDepartmentIdDropdown"
+                            class="form-select">
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        onclick="updateDoctor()">
+                    Update
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<scrIpt>$(document).ready(function () {
+    loadDoctors();
+});
+
+function loadDoctors() {
+
+    $.ajax({
+        type: "POST",
+        url: "/DoctorManagement/GetDoctors",
+        dataType: "json",
+
+        success: function (response) {
+
+            let rows = "";
+
+            $.each(response.responsedata, function (index, item) {
+
+                rows += `
+                    <tr>
+                        <td>${item.doctorName}</td>
+                        <td>${item.description}</td>
+                        <td>${item.departmentName}</td>
+                        <td>${item.qualification}</td>
+
+                        <td>
+
+                            <button class="btn btn-warning btn-sm"
+                                    onclick="editDoctor(${item.id})">
+                                Edit
+                            </button>
+
+                            <button class="btn btn-danger btn-sm"
+                                    onclick="deleteDoctor(${item.id})">
+                                Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+                `;
+            });
+
+            if ($.fn.DataTable.isDataTable('#doctorTable')) {
+                $('#doctorTable').DataTable().destroy();
             }
-        ]
+
+            $("#doctorTable tbody").html(rows);
+
+            new DataTable('#doctorTable', {
+                columnDefs: [
+                    {
+                        targets: 4,
+                        orderable: false
+                    }
+                ]
+            });
+        },
+
+        error: function (xhr) {
+            alert(xhr.responseText);
+        }
     });
+}
+function editDoctor(id) {
 
-    </script>
+    $.ajax({
+        type: "POST",
+        url: "/DoctorManagement/GetDoctorById",
+        contentType: "application/json",
+        dataType: "json",
 
+        data: JSON.stringify({
+            id: id
+        }),
 
+        success: function (response) {
+
+            let doctor = response.responsedata;
+
+            $("#editDoctorId").val(doctor.id);
+            $("#editDoctorName").val(doctor.doctorName);
+            $("#editDescription").val(doctor.description);
+            $("#editQualification").val(doctor.qualification);
+
+            loadDepartmentsDropdown(doctor.departmentId);
+
+            let modal = new bootstrap.Modal(
+                document.getElementById("editDoctorModal")
+            );
+
+            modal.show();
+        }
+    });
+}
+function loadDepartmentsDropdown(selectedDepartmentId) {
+
+    $.ajax({
+        type: "POST",
+        url: "/DepartmentManagement/GetDepartments",
+        dataType: "json",
+
+        success: function (response) {
+
+            let options = "";
+
+            $.each(response.responsedata, function (i, item) {
+
+                options += `
+                    <option value="${item.id}"
+                    ${item.id == selectedDepartmentId ? 'selected' : ''}>
+                        ${item.departmentName}
+                    </option>
+                `;
+            });
+
+            $("#editDepartmentIdDropdown").html(options);
+        }
+    });
+}
+function updateDoctor() {
+
+    let doctor = {
+
+        id: parseInt($("#editDoctorId").val()),
+        doctorName: $("#editDoctorName").val(),
+        description: $("#editDescription").val(),
+        qualification: $("#editQualification").val(),
+        departmentId: parseInt($("#editDepartmentIdDropdown").val())
+    };
+
+    $.ajax({
+
+        type: "POST",
+        url: "/DoctorManagement/UpdateDoctor",
+        contentType: "application/json",
+        dataType: "json",
+
+        data: JSON.stringify(doctor),
+
+        success: function (response) {
+
+            if (response.statuscode == 200) {
+
+                alert("Doctor Updated Successfully");
+
+                loadDoctors();
+
+                bootstrap.Modal
+                    .getInstance(document.getElementById("editDoctorModal"))
+                    .hide();
+            }
+            else {
+                alert(response.responsedata);
+            }
+        }
+    });
+}
+function deleteDoctor(id) {
+
+    if (!confirm("Delete this Doctor?"))
+        return;
+
+    $.ajax({
+
+        type: "POST",
+        url: "/DoctorManagement/DeleteDoctor",
+        contentType: "application/json",
+        dataType: "json",
+
+        data: JSON.stringify({
+            id: id
+        }),
+
+        success: function (response) {
+
+            if (response.statuscode == 200) {
+
+                alert("Doctor Deleted Successfully");
+
+                loadDoctors();
+            }
+            else {
+                alert(response.responsedata);
+            }
+        }
+    });
+}
+</script>
