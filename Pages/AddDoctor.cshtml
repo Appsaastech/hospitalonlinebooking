@@ -4,82 +4,206 @@
     ViewData["Title"] = "Add Doctor";
 }
 
+<div class="container">
 
+    <div class="card shadow p-4">
 
-    <div class="container">
+        <h2 class="mb-4">Add Doctor</h2>
 
-        <div class="card shadow p-4">
+        <form id="doctorForm">
 
-            <h2 class="mb-4">Add Doctor</h2>
+            <!-- Doctor Name -->
+            <div class="mb-3" id="divDoctorName">
+                <label class="form-label">
+                    Doctor Name
+                    <span class="text-danger">*</span>
+                </label>
 
-            <form>
+                <input type="text"
+                       id="doctorName"
+                       class="form-control"
+                       placeholder="Enter doctor name" />
+            </div>
 
-                <!-- Doctor Name -->
-                <div class="mb-3">
+            <!-- Description -->
+            <div class="mb-3" id="divDescription">
+                <label class="form-label">
+                    Description
+                </label>
 
-                    <label class="form-label">Doctor Name</label>
+                <textarea id="description"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Enter description"></textarea>
+            </div>
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter doctor name" />
+            <!-- Department -->
+            <div class="mb-3" id="divDepartment">
+                <label class="form-label">
+                    Department
+                    <span class="text-danger">*</span>
+                </label>
 
-                </div>
+                <select id="departmentId"
+                        class="form-select">
+                    <option value="">Select Department</option>
+                </select>
+            </div>
 
-                <!-- Description -->
-                <div class="mb-3">
+            <!-- Qualification -->
+            <div class="mb-3" id="divQualification">
+                <label class="form-label">
+                    Qualification
+                </label>
 
-                    <label class="form-label">Description</label>
+                <input type="text"
+                       id="qualification"
+                       class="form-control"
+                       placeholder="Enter qualification" />
+            </div>
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter description" />
+            <div class="d-flex gap-2">
 
-                </div>
+                <button type="submit"
+                        class="btn btn-primary">
+                    Save Doctor
+                </button>
 
-                <!-- Department Dropdown -->
-                <div class="mb-3">
+                <a href="/DoctorManagement"
+                   class="btn btn-secondary">
+                    Back
+                </a>
 
-                    <label class="form-label">Department</label>
+            </div>
 
-                    <select class="form-select">
-
-                        <option>Select Department</option>
-                        <option>Pediatrics</option>
-                        <option>Cardiology</option>
-                        <option>Orthopedics</option>
-                        <option>Neurology</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Qualification -->
-                <div class="mb-3">
-
-                    <label class="form-label">Qualification</label>
-
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter qualification" />
-
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex gap-2">
-
-                    <button type="submit" class="btn btn-primary">
-                        Save Doctor
-                    </button>
-
-                    <a href="/DoctorManagement" class="btn btn-secondary">
-                        Back
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        loadDepartments();
+
+        $("#doctorForm").submit(function (e) {
+
+            e.preventDefault();
+
+            SaveDoctor();
+
+        });
+    });
+
+    function loadDepartments() {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/DepartmentManagement/GetDepartments",
+            dataType: "json",
+
+            success: function (response) {
+
+                let options = '<option value="">Select Department</option>';
+
+                $.each(response.responsedata, function (i, item) {
+
+                    options += `
+                        <option value="${item.id}">
+                            ${item.departmentName}
+                        </option>`;
+                });
+
+                $("#departmentId").html(options);
+            }
+        });
+    }
+
+    function SaveDoctor() {
+
+        $(".lblvalidation").remove();
+
+        var doctorName = $("#doctorName").val().trim();
+        var description = $("#description").val().trim();
+        var departmentId = $("#departmentId").val();
+        var qualification = $("#qualification").val().trim();
+
+        var isValid = true;
+
+        if (doctorName == "") {
+
+            $("#divDoctorName").append(
+                "<label class='text-danger lblvalidation'>Please enter Doctor Name</label>"
+            );
+
+            isValid = false;
+        }
+
+        if (departmentId == "") {
+
+            $("#divDepartment").append(
+                "<label class='text-danger lblvalidation'>Please select Department</label>"
+            );
+
+            isValid = false;
+        }
+
+        if (!isValid)
+            return;
+
+        $.ajax({
+
+            type: "POST",
+            url: "/DoctorManagement/SaveDoctor",
+            dataType: "json",
+            contentType: "application/json",
+
+            data: JSON.stringify({
+
+                DoctorName: doctorName,
+                Description: description,
+                DepartmentId: parseInt(departmentId),
+                Qualification: qualification
+
+            }),
+
+            success: function (response) {
+
+                console.log(response);
+
+                if (response.statuscode == 200 ||
+                    response.statuscode == 201) {
+
+                    alert("Doctor Saved Successfully");
+
+                    $("#doctorName").val("");
+                    $("#description").val("");
+                    $("#departmentId").val("");
+                    $("#qualification").val("");
+
+                    setTimeout(function () {
+
+                        window.location.href =
+                            "/DoctorManagement";
+
+                    }, 1000);
+                }
+                else {
+
+                    alert(response.responsedata);
+                }
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr);
+
+                alert("Something went wrong!");
+            }
+        });
+    }
+
+</script>

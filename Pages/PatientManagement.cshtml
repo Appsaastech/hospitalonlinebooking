@@ -1,5 +1,4 @@
 ﻿@page
-
 @{
     Layout = "_MasterLayout";
     ViewData["Title"] = "Patient Management";
@@ -7,22 +6,32 @@
 
 <div class="container">
 
-    <!-- Heading + Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
 
-        <h2>Patient Management</h2>
+        <div>
+            <h2 class="mb-1">Patient Management</h2>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Patient Management
+                    </li>
+                </ol>
+            </nav>
+        </div>
 
         <a href="/AddPatient" class="btn btn-primary">
-            Add Patient
+            <i class="bi bi-plus-lg"></i> Add Patient
         </a>
 
     </div>
 
-    <!-- Patient Table -->
     <table id="patientTable" class="table table-bordered">
 
-        <thead class="table-dark">
-
+        <thead class="table-secondary">
             <tr>
                 <th>Patient Registration No</th>
                 <th>Patient Name</th>
@@ -30,91 +39,266 @@
                 <th>Address</th>
                 <th>Actions</th>
             </tr>
-
         </thead>
 
-        <tbody>
-
-            <tr>
-                <td>PAT00001</td>
-                <td>Anu Krishnan</td>
-                <td>9876543210</td>
-                <td>Kollam</td>
-                <td>
-                    <a href="/EditPatient" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>PAT00002</td>
-                <td>Rahul Nair</td>
-                <td>9876545678</td>
-                <td>Kochi</td>
-                <td>
-                    <a href="/EditPatient" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>PAT00003</td>
-                <td>Meera Joseph</td>
-                <td>9876512345</td>
-                <td>Trivandrum</td>
-                <td>
-                    <a href="/EditPatient" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>PAT00004</td>
-                <td>Arjun Kumar</td>
-                <td>9876509876</td>
-                <td>Alappuzha</td>
-                <td>
-                    <a href="/EditPatient" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-
-                    <button class="btn btn-danger btn-sm">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-        </tbody>
+        <tbody></tbody>
 
     </table>
 
 </div>
 
+<!-- Edit Modal -->
+<div class="modal fade" id="editPatientModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Edit Patient</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editPatientId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Patient Name</label>
+
+                    <input type="text"
+                           id="editPatientName"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+
+                    <input type="text"
+                           id="editPhoneNumber"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+
+                    <textarea id="editAddress"
+                              class="form-control"></textarea>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        onclick="updatePatient()">
+                    Update
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <script>
 
-        let table = new DataTable('#patientTable',{
-    columnDefs: [
-                {
-                    targets: 4,   // Actions column index (starts from 0)
-                    orderable: false
-                }
-            ]
-        });
+    $(document).ready(function () {
 
+        loadPatients();
+
+    });
+
+    function loadPatients() {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PatientManagement/GetPatients",
+            dataType: "json",
+
+            success: function (response) {
+
+                let rows = "";
+
+                $.each(response.responsedata, function (index, item) {
+
+                    rows += `
+                        <tr>
+
+                            <td>${item.patientRegistrationNo}</td>
+                            <td>${item.patientName}</td>
+                            <td>${item.phoneNumber}</td>
+                            <td>${item.address}</td>
+
+                            <td>
+
+                                <button class="btn btn-warning btn-sm"
+                                        onclick="editPatient(${item.id})">
+                                    Edit
+                                </button>
+
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="deletePatient(${item.id})">
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    `;
+                });
+
+                if ($.fn.DataTable.isDataTable('#patientTable')) {
+                    $('#patientTable').DataTable().destroy();
+                }
+
+                $("#patientTable tbody").html(rows);
+
+                new DataTable('#patientTable', {
+                    columnDefs: [
+                        {
+                            targets: 4,
+                            orderable: false
+                        }
+                    ]
+                });
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+        });
+    }
+
+    function editPatient(id) {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PatientManagement/GetPatientById",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                let patient = response.responsedata;
+
+                $("#editPatientId").val(patient.id);
+                $("#editPatientName").val(patient.patientName);
+                $("#editPhoneNumber").val(patient.phoneNumber);
+                $("#editAddress").val(patient.address);
+
+                let modal = new bootstrap.Modal(
+                    document.getElementById("editPatientModal")
+                );
+
+                modal.show();
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+        });
+    }
+
+    function updatePatient() {
+
+        let patient = {
+
+            id: parseInt($("#editPatientId").val()),
+            patientName: $("#editPatientName").val(),
+            phoneNumber: $("#editPhoneNumber").val(),
+            address: $("#editAddress").val()
+
+        };
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PatientManagement/UpdatePatient",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify(patient),
+
+            success: function (response) {
+
+                if (response.statuscode == 200) {
+
+                    alert("Patient Updated Successfully");
+
+                    loadPatients();
+
+                    bootstrap.Modal
+                        .getInstance(document.getElementById("editPatientModal"))
+                        .hide();
+                }
+                else {
+
+                    alert(response.responsedata);
+                }
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+        });
+    }
+
+    function deletePatient(id) {
+
+        if (!confirm("Delete this Patient?"))
+            return;
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PatientManagement/DeletePatient",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                if (response.statuscode == 200) {
+
+                    alert("Patient Deleted Successfully");
+
+                    loadPatients();
+                }
+                else {
+
+                    alert(response.responsedata);
+                }
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+        });
+    }
 
 </script>

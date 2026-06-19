@@ -25,30 +25,192 @@
         </thead>
 
         <tbody>
-            <tr>
-                <td>PAT</td>
-                <td>PRE</td>
-                <td>INV</td>
-                <td>
-                    <a href="/EditPrefix" class="btn btn-primary btn-sm">
-                        Edit
-                    </a>
-                </td>
-            </tr>
+         
         </tbody>
 
     </table>
 
 </div>
 
+<!-- Edit Modal -->
+<div class="modal fade" id="editPrefixModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Edit Prefix</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editPrefixId" />
+
+                <div class="mb-3">
+                    <label>Patient Registration Prefix</label>
+                    <input type="text"
+                           id="editPatientPrefix"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Prescription Prefix</label>
+                    <input type="text"
+                           id="editPrescriptionPrefix"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label>Invoice Prefix</label>
+                    <input type="text"
+                           id="editInvoicePrefix"
+                           class="form-control" />
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        onclick="updatePrefix()">
+                    Update
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 <script>
-        let table = new DataTable('#prefixTable',{
-    columnDefs: [
-                {
-                    targets: 3,   // Actions column index (starts from 0)
-                    orderable: false
+            $(document).ready(function () {
+
+        loadPrefixes();
+
+    });
+
+    function loadPrefixes() {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PrefixManagement/GetPrefixes",
+            dataType: "json",
+
+            success: function (response) {
+
+                let rows = "";
+
+                $.each(response.responsedata, function (index, item) {
+
+                    rows += `
+                        <tr>
+                            <td>${item.patientRegistrationPrefix}</td>
+                            <td>${item.prescriptionPrefix}</td>
+                            <td>${item.invoicePrefix}</td>
+
+                            <td>
+                                <button class="btn btn-primary btn-sm"
+                                        onclick="editPrefix(${item.id})">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                if ($.fn.DataTable.isDataTable('#prefixTable')) {
+                    $('#prefixTable').DataTable().destroy();
                 }
-            ]
+
+                $("#prefixTable tbody").html(rows);
+
+                new DataTable('#prefixTable', {
+                    columnDefs: [{
+                        targets: 3,
+                        orderable: false
+                    }]
+                });
+            }
         });
+    }
+
+    function editPrefix(id) {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PrefixManagement/GetPrefixById",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                let prefix = response.responsedata;
+
+                $("#editPrefixId").val(prefix.id);
+                $("#editPatientPrefix").val(prefix.patientRegistrationPrefix);
+                $("#editPrescriptionPrefix").val(prefix.prescriptionPrefix);
+                $("#editInvoicePrefix").val(prefix.invoicePrefix);
+
+                let modal = new bootstrap.Modal(
+                    document.getElementById("editPrefixModal")
+                );
+
+                modal.show();
+            }
+        });
+    }
+
+    function updatePrefix() {
+
+        let prefix = {
+
+            id: parseInt($("#editPrefixId").val()),
+            patientRegistrationPrefix: $("#editPatientPrefix").val(),
+            prescriptionPrefix: $("#editPrescriptionPrefix").val(),
+            invoicePrefix: $("#editInvoicePrefix").val()
+        };
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PrefixManagement/UpdatePrefix",
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify(prefix),
+
+            success: function (response) {
+
+                if (response.statuscode == 200) {
+
+                    alert("Prefix Updated Successfully");
+
+                    loadPrefixes();
+
+                    bootstrap.Modal
+                        .getInstance(document.getElementById("editPrefixModal"))
+                        .hide();
+                }
+                else {
+
+                    alert(response.responsedata);
+                }
+            }
+        });
+    }
 
 </script>

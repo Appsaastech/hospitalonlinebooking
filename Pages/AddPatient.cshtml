@@ -4,75 +4,171 @@
     ViewData["Title"] = "Add Patient";
 }
 
+<div class="container">
 
-    <div class="container">
+    <div class="card shadow p-4">
 
-        <div class="card shadow p-4">
+        <h2 class="mb-4">Add Patient</h2>
 
-            <h2 class="mb-4">Add Patient</h2>
+        <form id="patientForm">
 
-            <form>
+            <!-- Patient Name -->
+            <div class="mb-3" id="divPatientName">
 
-                <!-- Patient Registration Number -->
-                <div class="mb-3">
+                <label class="form-label">
+                    Patient Name
+                    <span class="text-danger">*</span>
+                </label>
 
-                    <label class="form-label">Patient Registration No</label>
+                <input type="text"
+                       id="patientName"
+                       class="form-control"
+                       placeholder="Enter patient name" />
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter registration number" />
+            </div>
 
-                </div>
+            <!-- Phone Number -->
+            <div class="mb-3" id="divPhoneNumber">
 
-                <!-- Patient Name -->
-                <div class="mb-3">
+                <label class="form-label">
+                    Phone Number
+                    <span class="text-danger">*</span>
+                </label>
 
-                    <label class="form-label">Patient Name</label>
+                <input type="text"
+                       id="phoneNumber"
+                       class="form-control"
+                       placeholder="Enter phone number" />
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter patient name" />
+            </div>
 
-                </div>
+            <!-- Address -->
+            <div class="mb-3" id="divAddress">
 
-                <!-- Phone Number -->
-                <div class="mb-3">
+                <label class="form-label">
+                    Address
+                </label>
 
-                    <label class="form-label">Phone Number</label>
+                <textarea id="address"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Enter address"></textarea>
 
-                    <input type="text"
-                           class="form-control"
-                           placeholder="Enter phone number" />
+            </div>
 
-                </div>
+            <div class="d-flex gap-2">
 
-                <!-- Address -->
-                <div class="mb-3">
+                <button type="submit"
+                        class="btn btn-primary">
+                    Save Patient
+                </button>
 
-                    <label class="form-label">Address</label>
+                <a href="/PatientManagement"
+                   class="btn btn-secondary">
+                    Back
+                </a>
 
-                    <textarea class="form-control"
-                              rows="3"
-                              placeholder="Enter address"></textarea>
+            </div>
 
-                </div>
-
-                <!-- Buttons -->
-                <div class="d-flex gap-2">
-
-                    <button type="submit" class="btn btn-primary">
-                        Save Patient
-                    </button>
-
-                    <a href="/PatientManagement" class="btn btn-secondary">
-                        Back
-                    </a>
-
-                </div>
-
-            </form>
-
-        </div>
+        </form>
 
     </div>
 
+</div>
+
+<script>
+
+    function SavePatient() {
+
+        $(".lblvalidation").remove();
+
+        var patientName = $("#patientName").val().trim();
+        var phoneNumber = $("#phoneNumber").val().trim();
+        var address = $("#address").val().trim();
+
+        var isValid = true;
+
+        if (patientName == "") {
+
+            $("#divPatientName").append(
+                "<label class='text-danger lblvalidation'>Please enter Patient Name</label>"
+            );
+
+            isValid = false;
+        }
+
+        if (phoneNumber == "") {
+
+            $("#divPhoneNumber").append(
+                "<label class='text-danger lblvalidation'>Please enter Phone Number</label>"
+            );
+
+            isValid = false;
+        }
+
+        if (!isValid)
+            return;
+
+        $.ajax({
+
+            type: "POST",
+            url: "/PatientManagement/SavePatient",
+            dataType: "json",
+            contentType: "application/json",
+
+            data: JSON.stringify({
+
+                PatientName: patientName,
+                PhoneNumber: phoneNumber,
+                Address: address
+
+            }),
+
+            success: function (response) {
+
+                console.log(response);
+
+                if (response.statuscode == 200 ||
+                    response.statuscode == 201) {
+
+                    alert("Patient Saved Successfully");
+
+                    $("#patientName").val("");
+                    $("#phoneNumber").val("");
+                    $("#address").val("");
+
+                    setTimeout(function () {
+
+                        window.location.href =
+                            "/PatientManagement";
+
+                    }, 1000);
+                }
+                else {
+
+                    alert(response.responsedata);
+                }
+            },
+
+            error: function (xhr) {
+
+                console.log(xhr);
+
+                alert("Something went wrong!");
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        $("#patientForm").submit(function (e) {
+
+            e.preventDefault();
+
+            SavePatient();
+
+        });
+
+    });
+
+</script>
