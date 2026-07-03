@@ -4,7 +4,7 @@
     ViewData["Title"] = "Admin Appointment";
 }
 
-    <div class="container mt-4">
+    <div class="container-fluid p-4">
         <div class="card shadow">
 
             <!-- Main Heading -->
@@ -22,7 +22,9 @@
                            id="regNo"
                            class="form-control"
                            placeholder="Enter Registration Number">
-                    <button class="btn btn-primary">
+                    <button type="button"
+                            id="btnSearchPatient"
+                            class="btn btn-primary">
                         Search
                     </button>
                 </div>
@@ -75,19 +77,9 @@
                 <!-- Department -->
                 <div class="mb-3">
                     <label class="form-label">Select Department</label>
-                    <select id="departmentSelect" class="form-select">
-                        <option value="">-- Select Department --</option>
-                        <option value="general">General Dentistry</option>
-                        <option value="orthodontics">Orthodontics</option>
-                        <option value="endodontics">Endodontics</option>
-                        <option value="periodontics">Periodontics</option>
-                        <option value="prosthodontics">Prosthodontics</option>
-                        <option value="oral-surgery">Oral & Maxillofacial Surgery</option>
-                        <option value="pedodontics">Pediatric Dentistry</option>
-                        <option value="cosmetic">Cosmetic Dentistry</option>
-                        <option value="implantology">Implantology</option>
-                        <option value="oral-medicine">Oral Medicine & Radiology</option>
-                    </select>
+                <select id="departmentSelect" class="form-select">
+                    <option value="">-- Select Department --</option>
+                </select>
                 </div>
 
                 <!-- Doctor -->
@@ -131,13 +123,9 @@
 
                 <div class="modal-body">
                     <label>Select Time Slot</label>
-                    <select id="timeSlotSelect" class="form-select">
-                        <option>09:00 AM</option>
-                        <option>10:00 AM</option>
-                        <option>11:00 AM</option>
-                        <option>02:00 PM</option>
-                        <option>03:00 PM</option>
-                    </select>
+                <select id="timeSlotSelect" class="form-select">
+                    <option value="">-- Select Time Slot --</option>
+                </select>
                 </div>
 
                 <div class="modal-footer">
@@ -148,92 +136,404 @@
         </div>
     </div>
 
+
+    <!--patient modal-->
+<div class="modal fade" id="patientModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Patient Details</h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <table class="table table-bordered">
+
+                    <tr>
+                        <th>Patient Name</th>
+                        <td id="searchPatientName"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Phone Number</th>
+                        <td id="searchPatientPhone"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Address</th>
+                        <td id="patientAddress"></td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        const doctors = {
-            general: ["Dr. Anjali Nair", "Dr. Rahul Menon"],
-            orthodontics: ["Dr. Meera Joseph", "Dr. Arjun Thomas"],
-            endodontics: ["Dr. Neha Pillai", "Dr. Vivek Kumar"],
-            periodontics: ["Dr. Sneha Mathew", "Dr. Rohan Das"],
-            prosthodontics: ["Dr. Priya Varghese", "Dr. Akash George"],
-            "oral-surgery": ["Dr. Sanjay Krishnan", "Dr. Deepak Nair"],
-            pedodontics: ["Dr. Reshma Roy", "Dr. Anoop Mathew"],
-            cosmetic: ["Dr. Divya Paul", "Dr. Kiran Babu"],
-            implantology: ["Dr. Sreelakshmi", "Dr. Manu Raj"],
-            "oral-medicine": ["Dr. Lakshmi Menon", "Dr. Harish Kumar"]
-        };
+<script>
 
-        const departmentSelect = document.getElementById("departmentSelect");
-        const doctorSelect = document.getElementById("doctorSelect");
-        const doctorSection = document.getElementById("doctorSection");
-        const scheduleSection = document.getElementById("scheduleSection");
-        const scheduleTableBody = document.getElementById("scheduleTableBody");
+    $(document).ready(function () {
 
-        function registerPatient() {
-            const name = document.getElementById("patientName").value;
-            const phone = document.getElementById("phoneNumber").value;
+        loadDepartments();
 
-            if (!name || !phone) {
-                alert("Please enter patient name and phone number");
-                return;
-            }
+    });
 
-            const generatedNumber = "PAT00001";
+    // Search Patient
 
-            document.getElementById("generatedRegNo").innerText = generatedNumber;
-            document.getElementById("patientResult").style.display = "block";
-        }
+    $("#btnSearchPatient").click(function () {
 
-        departmentSelect.addEventListener("change", function () {
-            const dept = this.value;
+        $.ajax({
 
-            doctorSelect.innerHTML = '<option value="">-- Select Doctor --</option>';
-            scheduleSection.style.display = "none";
+            type: "POST",
+            url: "/AdminAppointment/GetPatientByRegNo",
 
-            if (dept) {
-                doctorSection.style.display = "block";
+            contentType: "application/json",
+            dataType: "json",
 
-                doctors[dept].forEach(doc => {
-                    doctorSelect.innerHTML += `<option>${doc}</option>`;
-                });
-            } else {
-                doctorSection.style.display = "none";
-            }
-        });
+            data: JSON.stringify({
 
-        doctorSelect.addEventListener("change", function () {
-            if (this.value) {
-                loadSchedules();
-            }
-        });
+                patientRegistrationNo: $("#regNo").val()
 
-        function loadSchedules() {
-            scheduleSection.style.display = "block";
-            scheduleTableBody.innerHTML = "";
+            }),
 
-            for (let i = 0; i < 7; i++) {
-                let date = new Date();
-                date.setDate(date.getDate() + i);
+               success: function (response) {
 
-                scheduleTableBody.innerHTML += `
-                    <tr>
-                        <td>${date.toLocaleDateString()}</td>
-                        <td>${date.toLocaleDateString('en-US', { weekday: 'long' })}</td>
-                        <td>5 Slots Available</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="openTimeModal()">
-                                Choose
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
+        console.log(response);
 
-        function openTimeModal() {
-            const modal = new bootstrap.Modal(document.getElementById('timeModal'));
+        if (response.statuscode == 200) {
+
+            let patient = response.responsedata;
+
+            $("#searchPatientName").text(patient.patientName);
+            $("#searchPatientPhone").text(patient.phoneNumber);
+            $("#patientAddress").text(patient.address);
+
+            var modal = new bootstrap.Modal(
+                document.getElementById("patientModal")
+            );
+
             modal.show();
         }
-    </script>
+        else {
 
+            alert("Patient Not Found");
+
+        }
+
+    },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    });
+
+    //register new patient
+        function registerPatient() {
+
+        let patientName = $("#patientName").val();
+        let phoneNumber = $("#phoneNumber").val();
+
+        if (patientName == "") {
+            alert("Please enter Patient Name");
+            return;
+        }
+
+        if (phoneNumber == "") {
+            alert("Please enter Phone Number");
+            return;
+        }
+
+        $.ajax({
+
+            type: "POST",
+            url: "/AdminAppointment/RegisterPatient",
+
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+
+                patientName: patientName,
+                phoneNumber: phoneNumber
+
+            }),
+
+            success: function (response) {
+
+                console.log(response);
+
+                if (response.statuscode == 200) {
+
+                    let patient = response.responsedata;
+
+                    $("#generatedRegNo").text(response.responsedata);
+
+                    $("#patientResult").show();
+
+                    // Fill the Registration Number textbox automatically
+                    $("#regNo").val(response.responsedata);
+
+                }
+                else {
+
+                    alert(response.message);
+
+                }
+
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    }
+
+
+    // Load Departments
+
+    function loadDepartments() {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/AdminAppointment/GetDepartments",
+
+            dataType: "json",
+
+            success: function (response) {
+
+                let options =
+                    '<option value="">-- Select Department --</option>';
+
+                $.each(response.responsedata, function (index, item) {
+
+                    options += `
+                        <option value="${item.id}">
+                            ${item.departmentName}
+                        </option>
+                    `;
+
+                });
+
+                $("#departmentSelect").html(options);
+
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    }
+
+
+    // Department Change
+
+    $("#departmentSelect").change(function () {
+
+        let departmentId = $(this).val();
+
+        $("#scheduleSection").hide();
+
+        if (departmentId == "") {
+
+            $("#doctorSection").hide();
+            return;
+
+        }
+
+        $.ajax({
+
+            type: "POST",
+            url: "/AdminAppointment/GetDoctorsByDepartment",
+
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+
+                departmentId: parseInt(departmentId)
+
+            }),
+
+            success: function (response) {
+
+                let options =
+                    '<option value="">-- Select Doctor --</option>';
+
+                $.each(response.responsedata, function (index, item) {
+
+                    options += `
+                        <option value="${item.id}">
+                            ${item.doctorName}
+                        </option>
+                    `;
+
+                });
+
+                $("#doctorSelect").html(options);
+
+                $("#doctorSection").show();
+
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    });
+
+
+    // Doctor Change
+
+    $(document).on("change", "#doctorSelect", function () {
+
+    var doctorId = $("#doctorSelect").val();
+
+    console.log("DoctorId:", doctorId);
+
+    if (!doctorId) {
+        return;
+    }
+
+    $("#scheduleSection").hide();
+
+        $.ajax({
+
+            type: "POST",
+            url: "/AdminAppointment/GetDoctorSchedules",
+
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+
+                doctorId: parseInt(doctorId)
+
+            }),
+
+                success: function (response) {
+
+        let rows = "";
+
+        $.each(response.responsedata, function (index, item) {
+
+            rows += `
+                <tr>
+                    <td>${item.scheduleDate}</td>
+                    <td>${item.day}</td>
+                    <td>${item.availableSlots}</td>
+                    <td>
+                        <button
+                            class="btn btn-primary btn-sm"
+                            onclick="loadTimeSlots(${item.id})">
+                            Choose
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        $("#scheduleTableBody").html(rows);
+        $("#scheduleSection").show();
+    },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    });
+
+
+    // Load Time Slots
+
+    function loadTimeSlots(scheduleId) {
+
+        $.ajax({
+
+            type: "POST",
+            url: "/AdminAppointment/GetScheduleTimings",
+
+            contentType: "application/json",
+            dataType: "json",
+
+            data: JSON.stringify({
+
+                scheduleId: scheduleId
+
+            }),
+
+            success: function (response) {
+
+                let options = "";
+
+                $.each(response.responsedata, function (index, item) {
+
+                    options += `
+                        <option value="${item.timeSlot}">
+                            ${item.timeSlot}
+                        </option>
+                    `;
+
+                });
+
+                $("#timeSlotSelect").html(options);
+
+                var modal = new bootstrap.Modal(
+                    document.getElementById("timeModal")
+                );
+
+                modal.show();
+
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    }
+
+</script>
