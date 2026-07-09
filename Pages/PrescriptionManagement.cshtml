@@ -1,0 +1,194 @@
+﻿@page
+@{
+    Layout = "_MasterLayout";
+    ViewData["Title"] = "Prescription Management";
+}
+
+<div class="container-fluid py-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-file-earmark-medical"></i> Prescription Management
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active">Prescription Management</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white fw-bold">
+            <i class="bi bi-person-circle"></i> Patient Information
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Booking Number</label>
+                    <select class="form-select">
+                        <option>Select Booking</option>
+                        <option>BK0001</option>
+                        <option>BK0002</option>
+                        <option>BK0003</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Patient Name</label>
+                    <input class="form-control" value="Rahul Kumar" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Registration No</label>
+                    <input class="form-control" value="PAT0001" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Doctor</label>
+                    <input class="form-control" value="Dr. John" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Department</label>
+                    <input class="form-control" value="Dental" readonly />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Appointment Date</label>
+                    <input class="form-control" value="08-Jul-2026" readonly />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-success text-white fw-bold">
+            <i class="bi bi-capsule-pill"></i> Prescription Details
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Medicine Name</label>
+                    <input class="form-control" placeholder="Medicine Name" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Dosage</label>
+                    <input class="form-control" placeholder="1 Tablet" />
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Days</label>
+                    <input type="number" class="form-control" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Remarks</label>
+                    <input class="form-control" placeholder="After Food" />
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label d-block">Timings</label>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Morning</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Afternoon</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Night</label>
+                    </div>
+                </div>
+
+                <div class="col-12 text-end">
+                    <button class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Add Medicine
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white fw-bold">
+            <i class="bi bi-table"></i> Prescription List
+        </div>
+
+        <div class="card-body">
+
+            <table id="prescriptionTable" class="table table-hover table-bordered align-middle">
+
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Dosage</th>
+                        <th>Morning</th>
+                        <th>Afternoon</th>
+                        <th>Night</th>
+                        <th>Days</th>
+                        <th>Remarks</th>
+                        <th width="130">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Paracetamol</td>
+                        <td>1 Tablet</td>
+                        <td><span class="badge bg-success">Yes</span></td>
+                        <td><span class="badge bg-success">Yes</span></td>
+                        <td><span class="badge bg-danger">No</span></td>
+                        <td>5</td>
+                        <td>After Food</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Amoxicillin</td>
+                        <td>1 Capsule</td>
+                        <td><span class="badge bg-success">Yes</span></td>
+                        <td><span class="badge bg-danger">No</span></td>
+                        <td><span class="badge bg-success">Yes</span></td>
+                        <td>7</td>
+                        <td>Before Food</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+            <div class="text-end mt-3">
+                <button class="btn btn-primary">
+                    <i class="bi bi-floppy"></i> Save Prescription
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        new DataTable('#prescriptionTable',{
+            columnDefs:[{targets:7,orderable:false}]
+        });
+    });
+</script>
