@@ -5,12 +5,12 @@ using RestSharp;
 
 namespace hospitalonlinebooking.Controllers
 {
-    public class PublicAppointmentController : Controller
+    public class PrescriptionManagementController : Controller
     {
         private readonly SiteSettings _siteSettings;
         private readonly RestClientHelper _restClientHelper;
 
-        public PublicAppointmentController(
+        public PrescriptionManagementController(
             IOptions<SiteSettings> options,
             RestClientHelper restClientHelper)
         {
@@ -18,47 +18,18 @@ namespace hospitalonlinebooking.Controllers
             _restClientHelper = restClientHelper;
         }
 
-        public IActionResult PublicAppointment()
+        public IActionResult PrescriptionManagement()
         {
             return View();
         }
 
+        // Get Booking Numbers
         [HttpPost]
-        public async Task<JsonResult> GetPatientByRegNo(
-            [FromBody] PublicAppointmentModel obj)
+        public async Task<JsonResult> GetBookingNumbers()
         {
             try
             {
-                var options = _restClientHelper.CreateRestClientOptions(
-                    "PublicAppointment/GetPatientByRegNo");
-
-                var client = new RestClient(options);
-
-                var request = _restClientHelper.CreateRestRequest(new
-                {
-                    RegNo = obj.PatientRegistrationNo
-                },
-            "");
-
-
-                var response = await client.PostAsync<ApiResponse>(request);
-
-                return Json(response);
-            }
-            catch (Exception ex)
-            {
-                return Json(RestClientHelper.CreateErrorResponse(ex));
-            }
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> GetDepartments()
-        {
-            try
-            {
-                var options = _restClientHelper.CreateRestClientOptions(
-                    "PublicAppointment/GetDepartments");
-
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/GetBookingNumbers");
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(null, "");
@@ -73,15 +44,13 @@ namespace hospitalonlinebooking.Controllers
             }
         }
 
+        // Get Booking Details
         [HttpPost]
-        public async Task<JsonResult> GetDoctorsByDepartment(
-            [FromBody] PublicAppointmentModel obj)
+        public async Task<JsonResult> GetBookingDetails([FromBody] BookingModel obj)
         {
             try
             {
-                var options = _restClientHelper.CreateRestClientOptions(
-                    "PublicAppointment/GetDoctorsByDepartment");
-
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/GetBookingDetails");
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
@@ -96,15 +65,13 @@ namespace hospitalonlinebooking.Controllers
             }
         }
 
+        // Get Prescriptions
         [HttpPost]
-        public async Task<JsonResult> GetDoctorSchedules(
-            [FromBody] PublicAppointmentModel obj)
+        public async Task<JsonResult> GetPrescriptions([FromBody] BookingModel obj)
         {
             try
             {
-                var options = _restClientHelper.CreateRestClientOptions(
-                    "PublicAppointment/GetDoctorSchedules");
-
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/GetPrescriptions");
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
@@ -119,15 +86,13 @@ namespace hospitalonlinebooking.Controllers
             }
         }
 
+        // Get Prescription By Id
         [HttpPost]
-        public async Task<JsonResult> GetScheduleTimings(
-            [FromBody] PublicAppointmentModel obj)
+        public async Task<JsonResult> GetPrescriptionById([FromBody] PrescriptionModel obj)
         {
             try
             {
-                var options = _restClientHelper.CreateRestClientOptions(
-                    "PublicAppointment/GetScheduleTimings");
-
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/GetPrescriptionById");
                 var client = new RestClient(options);
 
                 var request = _restClientHelper.CreateRestRequest(obj, "");
@@ -141,17 +106,17 @@ namespace hospitalonlinebooking.Controllers
                 return Json(RestClientHelper.CreateErrorResponse(ex));
             }
         }
+
+        // Save Prescription
         [HttpPost]
-        public async Task<JsonResult> SaveAppointment([FromBody] AppointmentModel model)
+        public async Task<JsonResult> SavePrescription([FromBody] PrescriptionModel obj)
         {
             try
             {
-                var options = _restClientHelper.CreateRestClientOptions(
-                    "PublicAppointment/SaveAppointment");
-
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/SavePrescription");
                 var client = new RestClient(options);
 
-                var request = _restClientHelper.CreateRestRequest(model, "");
+                var request = _restClientHelper.CreateRestRequest(obj, "");
 
                 var response = await client.PostAsync<ApiResponse>(request);
 
@@ -163,8 +128,46 @@ namespace hospitalonlinebooking.Controllers
             }
         }
 
+        // Update Prescription
+        [HttpPost]
+        public async Task<JsonResult> UpdatePrescription([FromBody] PrescriptionModel obj)
+        {
+            try
+            {
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/UpdatePrescription");
+                var client = new RestClient(options);
 
+                var request = _restClientHelper.CreateRestRequest(obj, "");
 
+                var response = await client.PostAsync<ApiResponse>(request);
 
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                return Json(RestClientHelper.CreateErrorResponse(ex));
+            }
+        }
+
+        // Delete Prescription
+        [HttpPost]
+        public async Task<JsonResult> DeletePrescription([FromBody] PrescriptionModel obj)
+        {
+            try
+            {
+                var options = _restClientHelper.CreateRestClientOptions("Prescription/DeletePrescription");
+                var client = new RestClient(options);
+
+                var request = _restClientHelper.CreateRestRequest(obj, "");
+
+                var response = await client.PostAsync<ApiResponse>(request);
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                return Json(RestClientHelper.CreateErrorResponse(ex));
+            }
+        }
     }
 }

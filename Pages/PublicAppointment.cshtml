@@ -92,7 +92,9 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-primary">Book Now</button>
+                <button type="button" class="btn btn-primary" id="btnBookAppointment">
+                    Book Now
+                </button>
             </div>
 
         </div>
@@ -151,7 +153,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-
+        var selectedScheduleId = 0;
+    var selectedScheduleDate = "";
     $(document).ready(function () {
 
         loadDepartments();
@@ -357,7 +360,7 @@
                     <td>
                         <button
                             class="btn btn-primary btn-sm"
-                            onclick="loadTimeSlots(${item.id})">
+                            onclick="loadTimeSlots(${item.id},'${item.scheduleDate}')">
                             Choose
                         </button>
                     </td>
@@ -381,8 +384,10 @@
 
 
     // Load Time Slots
+    function loadTimeSlots(scheduleId, scheduleDate) {
 
-    function loadTimeSlots(scheduleId) {
+        selectedScheduleId = scheduleId;
+        selectedScheduleDate = scheduleDate;
 
         $.ajax({
 
@@ -431,5 +436,83 @@
         });
 
     }
+    //save appointment
+        $("#btnBookAppointment").click(function () {
 
+        if ($("#regNo").val() == "") {
+            alert("Enter Registration Number");
+            return;
+        }
+
+        if ($("#departmentSelect").val() == "") {
+            alert("Select Department");
+            return;
+        }
+
+        if ($("#doctorSelect").val() == "") {
+            alert("Select Doctor");
+            return;
+        }
+
+        if ($("#timeSlotSelect").val() == "") {
+            alert("Select Time Slot");
+            return;
+        }
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/PublicAppointment/SaveAppointment",
+
+            contentType: "application/json",
+
+            dataType: "json",
+
+            data: JSON.stringify({
+
+                patientRegistrationNo: $("#regNo").val(),
+
+                departmentId: parseInt($("#departmentSelect").val()),
+
+                doctorId: parseInt($("#doctorSelect").val()),
+
+                scheduleId: selectedScheduleId,
+
+                appointmentDate: selectedScheduleDate,
+
+                appointmentTime: $("#timeSlotSelect").val()
+
+            }),
+
+            success: function (response) {
+
+                if (response.statuscode == 200) {
+
+                    alert("Appointment Booked Successfully");
+
+                    bootstrap.Modal.getInstance(
+                        document.getElementById("timeModal")
+                    ).hide();
+
+                    $("#timeSlotSelect").val("");
+
+                }
+                else {
+
+                    alert(response.responsedata);
+
+                }
+
+            },
+
+            error: function (xhr) {
+
+                alert(xhr.responseText);
+
+            }
+
+        });
+
+    });
 </script>

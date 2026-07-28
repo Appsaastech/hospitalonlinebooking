@@ -29,37 +29,34 @@
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label">Booking Number</label>
-                    <select class="form-select">
-                        <option>Select Booking</option>
-                        <option>BK0001</option>
-                        <option>BK0002</option>
-                        <option>BK0003</option>
+                    <select class="form-select" id="bookingId">
+                        <option value="">Select Booking</option>
                     </select>
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Patient Name</label>
-                    <input class="form-control" value="Rahul Kumar" readonly />
+                    <input id="patientName" class="form-control" readonly />
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Registration No</label>
-                    <input class="form-control" value="PAT0001" readonly />
+                    <input id="registrationNo" class="form-control" readonly />
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Doctor</label>
-                    <input class="form-control" value="Dr. John" readonly />
+                    <input id="doctorName" class="form-control" readonly />
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Department</label>
-                    <input class="form-control" value="Dental" readonly />
+                    <input id="departmentName" class="form-control" readonly />
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Appointment Date</label>
-                    <input class="form-control" value="08-Jul-2026" readonly />
+                    <input id="appointmentDate" class="form-control" readonly />
                 </div>
             </div>
         </div>
@@ -69,51 +66,57 @@
         <div class="card-header bg-success text-white fw-bold">
             <i class="bi bi-capsule-pill"></i> Prescription Details
         </div>
-
+        <input type="hidden" id="prescriptionId" value="" />
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-4">
                     <label class="form-label">Medicine Name</label>
-                    <input class="form-control" placeholder="Medicine Name" />
+                    <input id="medicineName" class="form-control" />
                 </div>
 
                 <div class="col-md-2">
                     <label class="form-label">Dosage</label>
-                    <input class="form-control" placeholder="1 Tablet" />
+                    <input id="dosage" class="form-control" />
                 </div>
 
                 <div class="col-md-2">
                     <label class="form-label">Days</label>
-                    <input type="number" class="form-control" />
+                    <input id="days" type="number" class="form-control" />
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label">Remarks</label>
-                    <input class="form-control" placeholder="After Food" />
+                    <input id="remarks" class="form-control" />
                 </div>
 
                 <div class="col-md-12">
                     <label class="form-label d-block">Timings</label>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox">
+                        <input type="checkbox" id="morning" />
                         <label class="form-check-label">Morning</label>
                     </div>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox">
+                        <input type="checkbox" id="afternoon" />
                         <label class="form-check-label">Afternoon</label>
                     </div>
 
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox">
+                        <input type="checkbox" id="night" />                        
                         <label class="form-check-label">Night</label>
                     </div>
                 </div>
 
                 <div class="col-12 text-end">
-                    <button class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i> Add Medicine
+                    <button type="button"
+                            id="btnSaveMedicine"
+                            class="btn btn-success"
+                            onclick="savePrescription()">
+
+                        <i class="bi bi-plus-circle"></i>
+                        Add Medicine
+
                     </button>
                 </div>
             </div>
@@ -143,52 +146,433 @@
                 </thead>
 
                 <tbody>
-                    <tr>
-                        <td>Paracetamol</td>
-                        <td>1 Tablet</td>
-                        <td><span class="badge bg-success">Yes</span></td>
-                        <td><span class="badge bg-success">Yes</span></td>
-                        <td><span class="badge bg-danger">No</span></td>
-                        <td>5</td>
-                        <td>After Food</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>Amoxicillin</td>
-                        <td>1 Capsule</td>
-                        <td><span class="badge bg-success">Yes</span></td>
-                        <td><span class="badge bg-danger">No</span></td>
-                        <td><span class="badge bg-success">Yes</span></td>
-                        <td>7</td>
-                        <td>Before Food</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
+                   
                 </tbody>
 
             </table>
 
-            <div class="text-end mt-3">
-                <button class="btn btn-primary">
-                    <i class="bi bi-floppy"></i> Save Prescription
-                </button>
-            </div>
-
+           
         </div>
     </div>
 
 </div>
 
 <script>
-    $(function () {
-        new DataTable('#prescriptionTable',{
-            columnDefs:[{targets:7,orderable:false}]
-        });
+        $(document).ready(function () {
+
+        loadBookingNumbers();
+
     });
+
+    //load Booking Numbers 
+        function loadBookingNumbers() {
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/PrescriptionManagement/GetBookingNumbers",
+
+            dataType: "json",
+
+            success: function (response) {
+
+                let option = '<option value="">Select Booking</option>';
+
+                $.each(response.responsedata,function(i,item){
+
+                    option +=
+                    `<option value="${item.bookingId}">
+                        ${item.bookingNumber}
+                    </option>`;
+
+                });
+
+                $("#bookingId").html(option);
+
+            }
+
+        });
+
+    }
+
+        $("#bookingId").change(function () {
+
+        let bookingId = $(this).val();
+
+        if (bookingId == "")
+            return;
+
+        getBookingDetails(bookingId);
+
+        loadPrescriptions(bookingId);
+
+    });
+
+    // get booking details
+        function getBookingDetails(bookingId){
+
+        $.ajax({
+
+            type:"POST",
+
+            url:"/PrescriptionManagement/GetBookingDetails",
+
+            contentType:"application/json",
+
+            dataType:"json",
+
+            data:JSON.stringify({
+
+                bookingId:parseInt(bookingId)
+
+            }),
+
+            success:function(response){
+
+                let obj=response.responsedata;
+
+                $("#patientName").val(obj.patientName);
+
+                $("#registrationNo").val(obj.registrationNo);
+
+                $("#doctorName").val(obj.doctorName);
+
+                $("#departmentName").val(obj.departmentName);
+
+                $("#appointmentDate").val(obj.appointmentDate);
+
+            }
+
+        });
+
+    }
+    // prescription list
+        function loadPrescriptions(bookingId){
+
+        $.ajax({
+
+            type:"POST",
+
+            url:"/PrescriptionManagement/GetPrescriptions",
+
+            contentType:"application/json",
+
+            dataType:"json",
+
+            data:JSON.stringify({
+
+                bookingId:parseInt(bookingId)
+
+            }),
+
+            success:function(response){
+
+                let rows="";
+
+                $.each(response.responsedata,function(i,item){
+
+                    rows+=`
+
+                    <tr>
+
+                    <td>${item.medicineName}</td>
+
+                    <td>${item.dosage}</td>
+
+                    <td>${item.morning?"Yes":"No"}</td>
+
+                    <td>${item.afternoon?"Yes":"No"}</td>
+
+                    <td>${item.night?"Yes":"No"}</td>
+
+                    <td>${item.days}</td>
+
+                    <td>${item.remarks}</td>
+
+                    <td>
+
+                    <button
+                    class="btn btn-warning btn-sm"
+                    onclick="editPrescription(${item.id})">
+
+                    Edit
+
+                    </button>
+
+                    <button
+                    class="btn btn-danger btn-sm"
+                    onclick="deletePrescription(${item.id})">
+
+                    Delete
+
+                    </button>
+
+                    </td>
+
+                    </tr>
+
+                    `;
+
+                });
+
+                if ($.fn.DataTable.isDataTable('#prescriptionTable'))
+                    $('#prescriptionTable').DataTable().destroy();
+
+                $("#prescriptionTable tbody").html(rows);
+
+                new DataTable('#prescriptionTable',{
+
+                    columnDefs:[
+                    {
+                        targets:7,
+                        orderable:false
+                    }]
+
+                });
+
+            }
+
+        });
+
+    }
+
+    //save prescription
+           function savePrescription() {
+
+        if ($("#prescriptionId").val() != "") {
+
+            updatePrescription();
+
+            return;
+
+        }
+
+        let prescription = {
+
+            bookingId: parseInt($("#bookingId").val()),
+
+            medicineName: $("#medicineName").val(),
+
+            dosage: $("#dosage").val(),
+
+            morning: $("#morning").is(":checked"),
+
+            afternoon: $("#afternoon").is(":checked"),
+
+            night: $("#night").is(":checked"),
+
+            days: parseInt($("#days").val()),
+
+            remarks: $("#remarks").val()
+
+        };
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/PrescriptionManagement/SavePrescription",
+
+            contentType: "application/json",
+
+            dataType: "json",
+
+            data: JSON.stringify(prescription),
+
+            success: function (response) {
+
+                if (response.statuscode == 201) {
+
+                    alert("Prescription Saved");
+
+                    clearMedicine();
+
+                    loadPrescriptions($("#bookingId").val());
+
+                }
+                else {
+
+                    alert(response.responsedata);
+
+                }
+
+            }
+
+        });
+
+    }
+
+    //edit prescription
+        function editPrescription(id) {
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/PrescriptionManagement/GetPrescriptionById",
+
+            contentType: "application/json",
+
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                let item = response.responsedata;
+
+                $("#prescriptionId").val(item.id);
+
+                $("#medicineName").val(item.medicineName);
+
+                $("#dosage").val(item.dosage);
+
+                $("#days").val(item.days);
+
+                $("#remarks").val(item.remarks);
+
+                $("#morning").prop("checked", item.morning);
+
+                $("#afternoon").prop("checked", item.afternoon);
+
+                $("#night").prop("checked", item.night);
+
+                $("#btnSaveMedicine")
+                    .removeClass("btn-success")
+                    .addClass("btn-warning")
+                    .text("Update Medicine");
+
+            }
+
+        });
+
+    }
+    //update prescription
+        function updatePrescription() {
+
+        let prescription = {
+
+            id: parseInt($("#prescriptionId").val()),
+
+            bookingId: parseInt($("#bookingId").val()),
+
+            medicineName: $("#medicineName").val(),
+
+            dosage: $("#dosage").val(),
+
+            morning: $("#morning").is(":checked"),
+
+            afternoon: $("#afternoon").is(":checked"),
+
+            night: $("#night").is(":checked"),
+
+            days: parseInt($("#days").val()),
+
+            remarks: $("#remarks").val()
+
+        };
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/PrescriptionManagement/UpdatePrescription",
+
+            contentType: "application/json",
+
+            dataType: "json",
+
+            data: JSON.stringify(prescription),
+
+            success: function (response) {
+
+                if (response.statuscode == 200) {
+
+                    alert("Prescription Updated");
+
+                    clearMedicine();
+
+                    loadPrescriptions($("#bookingId").val());
+
+                }
+                else {
+
+                    alert(response.responsedata);
+
+                }
+
+            }
+
+        });
+
+    }
+    //delete prescription
+
+        function deletePrescription(id) {
+
+        if (!confirm("Delete this prescription?"))
+            return;
+
+        $.ajax({
+
+            type: "POST",
+
+            url: "/PrescriptionManagement/DeletePrescription",
+
+            contentType: "application/json",
+
+            dataType: "json",
+
+            data: JSON.stringify({
+                id: id
+            }),
+
+            success: function (response) {
+
+                if (response.statuscode == 200) {
+
+                    alert("Prescription Deleted");
+
+                    loadPrescriptions($("#bookingId").val());
+
+                }
+                else {
+
+                    alert(response.responsedata);
+
+                }
+
+            }
+
+        });
+
+    }
+    //clear medicine
+        function clearMedicine() {
+
+        $("#prescriptionId").val("");
+
+        $("#medicineName").val("");
+
+        $("#dosage").val("");
+
+        $("#days").val("");
+
+        $("#remarks").val("");
+
+        $("#morning").prop("checked", false);
+
+        $("#afternoon").prop("checked", false);
+
+        $("#night").prop("checked", false);
+
+        $("#btnSaveMedicine")
+            .removeClass("btn-warning")
+            .addClass("btn-success")
+            .html('<i class="bi bi-plus-circle"></i> Add Medicine');
+
+    }
 </script>
